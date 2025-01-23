@@ -93,19 +93,9 @@ BEGIN
         NEW.notafinal = (NEW.nota1 + NEW.nota2) / 2;
     END IF;
 
-    IF NEW.notafinal IS NOT NULL AND NEW.notafinal < 7 THEN 
-        NEW.statusmatricula = 'Reprovado';
-    END IF;
-    
-    IF NEW.notafinal IS NOT NULL AND NEW.notafinal >= 7 THEN 
-        NEW.statusmatricula = 'Aprovado';
-    END IF;
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-DROP TRIGGER trg_calcular_media ON matriculas;
 
 CREATE TRIGGER trg_calcular_media
 BEFORE INSERT OR UPDATE OF nota1, nota2 ON matriculas

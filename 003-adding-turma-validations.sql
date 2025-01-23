@@ -1,13 +1,17 @@
-CREATE OR REPLACE PROCEDURE fechar_turma(p_turmaid INT)
-AS $$
+CREATE OR REPLACE FUNCTION fechar_turma()
+RETURNS TRIGGER AS $$
 BEGIN
     UPDATE matriculas
     SET statusmatricula = CASE 
         WHEN notafinal >= 7 THEN 'Aprovado'::StatusMatriculaEnum
         ELSE 'Reprovado'::StatusMatriculaEnum
     END
-    WHERE turmaid = p_turmaid;
+    WHERE turmaid = OLD.turmaid;
 
-    UPDATE turmas SET status = 'Fechada'::StatusTurmaEnum WHERE turmaid = p_turmaid;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_fechar_turma
+BEFORE DELETE OR UPDATE ON turmas
+FOR EACH ROW EXECUTE FUNCTION fechar_turma();
